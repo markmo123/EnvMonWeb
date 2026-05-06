@@ -133,7 +133,7 @@ az functionapp config appsettings set \
     COSMOS_CONNECTION_STRING="$COSMOS_CONN" \
     COSMOS_DATABASE="SensorDB" \
     COSMOS_CONTAINER="Readings" \
-    API_KEY="your-generated-api-key-here"
+    API_KEY='your-generated-api-key-here'
 ```
 
 ### 4. Deploy
