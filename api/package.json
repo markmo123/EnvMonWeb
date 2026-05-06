@@ -1,0 +1,19 @@
+{
+  "name": "iot-dashboard-api",
+  "version": "1.0.0",
+  "description": "Azure Functions API for IoT sensor dashboard",
+  "main": "index.js",
+  "scripts": {
+    "start": "func start",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@azure/cosmos": "^4.0.0"
+  },
+  "devDependencies": {
+    "@azure/functions": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
