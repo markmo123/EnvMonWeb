@@ -45,7 +45,7 @@ GET https://<your-functions-url>/api/readings/history?limit=50
 
 - Azure account (free tier)
 - GitHub account
-- Node.js 20+
+- Node.js 24+
 
 ### 1. Create Azure Resources
 
@@ -78,7 +78,7 @@ az cosmosdb sql container create \
 
 # Create Storage Account for Functions
 az storage account create \
-  --name iotdashboardstorage \
+  --name iotdashboardstorage$RANDOM \
   --resource-group iot-dashboard-rg \
   --sku Standard_LRS
 
@@ -89,7 +89,7 @@ az functionapp create \
   --storage-account iotdashboardstorage \
   --consumption-plan-location australiaeast \
   --runtime node \
-  --runtime-version 20 \
+  --runtime-version 24 \
   --functions-version 4 \
   --os-type Linux
 
