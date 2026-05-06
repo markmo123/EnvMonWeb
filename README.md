@@ -56,11 +56,11 @@ az login
 # Create resource group
 az group create --name iot-dashboard-rg --location australiaeast
 
-# Create Cosmos DB (free tier - only 1 free tier account per subscription)
+# Create Cosmos DB (serverless - pay per request, no idle cost)
 az cosmosdb create \
   --name iot-dashboard-cosmos \
   --resource-group iot-dashboard-rg \
-  --enable-free-tier true \
+  --capabilities EnableServerless \
   --default-consistency-level Session
 
 # Create Cosmos DB database and container
@@ -74,8 +74,7 @@ az cosmosdb sql container create \
   --resource-group iot-dashboard-rg \
   --database-name SensorDB \
   --name Readings \
-  --partition-key-path "/deviceId" \
-  --throughput 400
+  --partition-key-path "/deviceId"
 
 # Create Storage Account for Functions
 az storage account create \
@@ -90,7 +89,7 @@ az functionapp create \
   --storage-account iotdashboardstorage \
   --consumption-plan-location australiaeast \
   --runtime node \
-  --runtime-version 18 \
+  --runtime-version 20 \
   --functions-version 4 \
   --os-type Linux
 
@@ -99,7 +98,7 @@ az functionapp create \
 #   --name iot-dashboard-web \
 #   --resource-group iot-dashboard-rg \
 #   --source https://github.com/<your-org>/<your-repo> \
-#   --location eastasia \
+#   --location australiaeast \
 #   --branch main \
 #   --app-location "/frontend" \
 #   --output-location "dist"
