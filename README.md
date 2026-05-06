@@ -114,6 +114,7 @@ Add these secrets in your GitHub repository (Settings → Secrets → Actions):
 | `AZURE_STATIC_WEB_APPS_API_TOKEN` | Created automatically when you link Static Web App to GitHub |
 | `COSMOS_CONNECTION_STRING` | Azure Portal → Cosmos DB → Keys → Primary Connection String |
 | `API_KEY` | Generate a secure random string (used to authenticate device submissions) |
+| `VITE_API_BASE_URL` | Your Function App URL, e.g. https://iot-dashboard-api.azurewebsites.net |
 
 ### 3. Set Function App Settings
 
