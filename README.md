@@ -45,7 +45,7 @@ GET https://<your-functions-url>/api/readings/history?limit=50
 
 - Azure account (free tier)
 - GitHub account
-- Node.js 18+
+- Node.js 20+
 
 ### 1. Create Azure Resources
 
