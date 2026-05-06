@@ -30,4 +30,5 @@ jobs:
         with:
           app-name: hometemp-api
           package: api
+          sku: flexconsumption
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
