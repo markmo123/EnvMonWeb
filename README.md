@@ -7,7 +7,7 @@ A real-time dashboard for temperature, humidity, and light sensor data, hosted o
 | Service | Purpose | Tier |
 |---|---|---|
 | Azure Static Web Apps | Frontend React dashboard | Free |
-| Azure Functions | REST API for data ingestion & query | Consumption (free) |
+| Azure Functions | REST API for data ingestion & query | Flex Consumption |
 | Azure Cosmos DB | Sensor data storage | Free (1000 RU/s) |
 | GitHub Actions | CI/CD pipeline | Free |
 
@@ -80,18 +80,23 @@ az cosmosdb sql container create \
 az storage account create \
   --name iotdashboardstorage$RANDOM \
   --resource-group iot-dashboard-rg \
+  --location australiaeast \
   --sku Standard_LRS
 
-# Create Function App
+# Create a blob container for Flex Consumption deployment artifacts
+az storage container create \
+  --name deploymentartifacts \
+  --account-name iotdashboardstorage
+
+# Create Function App (Flex Consumption plan)
 az functionapp create \
   --name iot-dashboard-api \
   --resource-group iot-dashboard-rg \
-  --storage-account iotdashboardstorage \
-  --consumption-plan-location australiaeast \
   --runtime node \
   --runtime-version 24 \
-  --functions-version 4 \
-  --os-type Linux
+  --flexconsumption-location australiaeast \
+  --storage-account iotdashboardstorage \
+  --deployment-storage-container-name deploymentartifacts
 
 # Create Static Web App (do this via Azure Portal or CLI after pushing to GitHub)
 # az staticwebapp create \
@@ -127,6 +132,7 @@ COSMOS_CONN=$(az cosmosdb keys list \
   --query "connectionStrings[0].connectionString" -o tsv)
 
 # Set app settings on Function App
+# Note: Flex Consumption uses az functionapp config appsettings set the same way
 az functionapp config appsettings set \
   --name iot-dashboard-api \
   --resource-group iot-dashboard-rg \
