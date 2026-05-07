@@ -13,11 +13,11 @@ export function useSensorData(refreshInterval = 30000) {
     try {
       const [latestRes, historyRes] = await Promise.all([
         fetch(`${API_BASE}/api/readings/latest`),
-        fetch(`${API_BASE}/api/readings/history?limit=60`),
+        // Fetch max 500 readings — client filters by timeframe
+        fetch(`${API_BASE}/api/readings/history?limit=500`),
       ]);
 
       if (latestRes.status === 404) {
-        // No data yet — not an error
         setLatest(null);
         setHistory([]);
         setError(null);
@@ -53,4 +53,23 @@ export function useSensorData(refreshInterval = 30000) {
   }, [fetchData, refreshInterval]);
 
   return { latest, history, loading, error, lastUpdated, refresh: fetchData };
+}
+
+/**
+ * Filter a history array to only include readings within the given timeframe.
+ * timeframe: "1d" | "1w" | "1m" | "all"
+ */
+export function filterByTimeframe(history, timeframe) {
+  if (timeframe === "all" || !history.length) return history;
+
+  const now = Date.now();
+  const ms = {
+    "1d": 24 * 60 * 60 * 1000,
+    "1w": 7 * 24 * 60 * 60 * 1000,
+    "1m": 30 * 24 * 60 * 60 * 1000,
+  }[timeframe];
+
+  if (!ms) return history;
+  const cutoff = now - ms;
+  return history.filter((r) => new Date(r.timestamp).getTime() >= cutoff);
 }

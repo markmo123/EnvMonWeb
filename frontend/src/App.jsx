@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useSensorData } from "./hooks/useSensorData";
+import { useSensorData, filterByTimeframe } from "./hooks/useSensorData";
 import StatCard from "./components/StatCard";
 import SensorChart from "./components/SensorChart";
 
@@ -138,11 +138,15 @@ export default function App() {
     humidity: true,
     light: true,
   });
+  const [timeframe, setTimeframe] = useState("1d");
 
   const toggleMetric = (key) =>
     setActiveMetrics((prev) => ({ ...prev, [key]: !prev[key] }));
 
-  const isOnline = latest && lastUpdated && (Date.now() - lastUpdated) < 90000;
+  // Filter history to the selected timeframe for the chart
+  const filteredHistory = filterByTimeframe(history, timeframe);
+
+  const isOnline = latest && lastUpdated && Date.now() - lastUpdated < 90000;
 
   return (
     <div style={styles.container}>
@@ -159,7 +163,11 @@ export default function App() {
             <span
               style={{
                 ...styles.dot,
-                background: error ? "var(--red)" : isOnline ? "var(--green)" : "var(--text-muted)",
+                background: error
+                  ? "var(--red)"
+                  : isOnline
+                  ? "var(--green)"
+                  : "var(--text-muted)",
               }}
             />
             {error ? "Error" : isOnline ? "Live" : loading ? "Loading…" : "No data"}
@@ -178,11 +186,12 @@ export default function App() {
       {/* Error banner */}
       {error && (
         <div style={styles.errorBox}>
-          ⚠️ Could not reach API: {error}. Check that your Azure Functions are deployed and VITE_API_BASE_URL is set.
+          ⚠️ Could not reach API: {error}. Check that your Azure Functions are deployed and
+          VITE_API_BASE_URL is set.
         </div>
       )}
 
-      {/* Stat cards */}
+      {/* Stat cards — always show latest reading regardless of timeframe */}
       {!loading && !latest ? (
         <div style={styles.grid}>
           <div style={styles.emptyBox}>
@@ -205,7 +214,11 @@ export default function App() {
             icon="🌡️"
             color="var(--accent-temp)"
             colorBg="var(--accent-temp-bg)"
-            subtext={latest ? `Feels like ${(latest.temperature * 1.05).toFixed(1)}°C with humidity` : "Waiting for data"}
+            subtext={
+              latest
+                ? `Feels like ${(latest.temperature * 1.05).toFixed(1)}°C with humidity`
+                : "Waiting for data"
+            }
             trend={calcTrend(history, "temperature")}
           />
           <StatCard
@@ -252,16 +265,18 @@ export default function App() {
       {/* Chart */}
       <div style={styles.grid}>
         <SensorChart
-          history={history}
+          history={filteredHistory}
           activeMetrics={activeMetrics}
           onToggleMetric={toggleMetric}
+          timeframe={timeframe}
+          onTimeframeChange={setTimeframe}
         />
       </div>
 
       {/* Footer */}
       <div style={styles.footer}>
         <span>
-          Showing {history.length} reading{history.length !== 1 ? "s" : ""}
+          {filteredHistory.length} reading{filteredHistory.length !== 1 ? "s" : ""} shown
           {latest ? ` · Device: ${latest.deviceId}` : ""}
         </span>
         <span>Auto-refreshes every 30 seconds</span>
